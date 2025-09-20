@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MovieBooking | Select Seats</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+    <header class="navbar">
+        <div class="container nav-container">
+            <h1 class="logo">MovieBooking</h1>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="booking.html">My Bookings</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <section class="seat-selection container">
+        <h2 id="movieTitle"></h2>
+        <p id="showTime"></p>
+
+        <div class="screen">Screen</div>
+        <div class="seats-container" id="seatsContainer"></div>
+
+        <p>Selected Seats: <span id="selectedSeats">0</span> | Total: $<span id="totalPrice">0</span></p>
+        <button id="bookNow" class="btn-primary">Book Now</button>
+    </section>
+
+    <script src="js/script.js"></script>
+    <script>
+        // Get movie and time from URL
+        const params = new URLSearchParams(window.location.search);
+        const movieIndex = params.get("movie");
+        const showTime = params.get("time");
+        const movie = movies[movieIndex];
+        document.getElementById("movieTitle").textContent = movie.title;
+        document.getElementById("showTime").textContent = `Showtime: ${showTime}`;
+
+        const seatsContainer = document.getElementById("seatsContainer");
+        const selectedSeatsEl = document.getElementById("selectedSeats");
+        const totalPriceEl = document.getElementById("totalPrice");
+        const bookNowBtn = document.getElementById("bookNow");
+        const seatPrice = 10; // $10 per seat
+
+        let selectedSeats = JSON.parse(localStorage.getItem(`${movie.title}-${showTime}`)) || [];
+
+        function renderSeats() {
+            seatsContainer.innerHTML = "";
+            for (let i = 1; i <= 40; i++) {
+                const seat = document.createElement("div");
+                seat.classList.add("seat");
+                if (selectedSeats.includes(i)) seat.classList.add("selected");
+                seat.textContent = i;
+                seat.addEventListener("click", () => {
+                    if (selectedSeats.includes(i)) {
+                        selectedSeats = selectedSeats.filter(s => s !== i);
+                        seat.classList.remove("selected");
+                    } else {
+                        selectedSeats.push(i);
+                        seat.classList.add("selected");
+                    }
+                    updateSummary();
+                });
+                seatsContainer.appendChild(seat);
+            }
+            updateSummary();
+        }
+
+        function updateSummary() {
+            selectedSeatsEl.textContent = selectedSeats.length;
+            totalPriceEl.textContent = (selectedSeats.length * seatPrice).toFixed(2);
+        }
+
+        bookNowBtn.addEventListener("click", () => {
+            if (selectedSeats.length === 0) { alert("Select at least one seat"); return; }
+            localStorage.setItem(`${movie.title}-${showTime}`, JSON.stringify(selectedSeats));
+            alert(`✅ Seats booked successfully for ${movie.title} at ${showTime}`);
+            window.location.href = "booking.html";
+        });
+
+        renderSeats();
+    </script>
+</body>
+
+</html>

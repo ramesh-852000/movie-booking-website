@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MovieBooking | My Bookings</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+    <header class="navbar">
+        <div class="container nav-container">
+            <h1 class="logo">MovieBooking</h1>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="booking.html">My Bookings</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <section class="bookings container">
+        <h2 class="section-title">My Bookings</h2>
+        <div id="bookingList"></div>
+    </section>
+
+    <script src="js/script.js"></script>
+    <script>
+        const bookingList = document.getElementById("bookingList");
+        bookingList.innerHTML = "";
+
+        movies.forEach(movie => {
+            Object.keys(localStorage).forEach(key => {
+                if (key.startsWith(movie.title)) {
+                    const seats = JSON.parse(localStorage.getItem(key));
+                    if (seats.length > 0) {
+                        const div = document.createElement("div");
+                        div.classList.add("booking-item");
+                        div.innerHTML = `
+            <h3>${movie.title}</h3>
+            <p>Showtime: ${key.split('-')[1]}</p>
+            <p>Seats: ${seats.join(', ')}</p>
+            <p>Total: $${(seats.length * 10).toFixed(2)}</p>`;
+                        bookingList.appendChild(div);
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>
